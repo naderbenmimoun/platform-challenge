@@ -45,55 +45,31 @@ test("GET /tasks returns a list of tasks", async () => {
   }
 });
 
-test("PATCH /tasks/:id updates an existing task", async () => {
+test("DELETE /tasks/:id deletes an existing task", async () => {
   const server = app.listen(0);
 
   try {
     const port = server.address().port;
-    const response = await fetch(`http://localhost:${port}/tasks/2`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ completed: true })
+    const response = await fetch(`http://localhost:${port}/tasks/1`, {
+      method: "DELETE"
     });
-    const task = await response.json();
 
-    assert.equal(response.status, 200);
-    assert.equal(task.id, 2);
-    assert.equal(task.completed, true);
+    assert.equal(response.status, 204);
   } finally {
     server.close();
   }
 });
 
-test("PATCH /tasks/:id returns 404 for an unknown task", async () => {
+test("DELETE /tasks/:id returns 404 for an unknown task", async () => {
   const server = app.listen(0);
 
   try {
     const port = server.address().port;
     const response = await fetch(`http://localhost:${port}/tasks/999`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ completed: true })
+      method: "DELETE"
     });
 
     assert.equal(response.status, 404);
-  } finally {
-    server.close();
-  }
-});
-
-test("PATCH /tasks/:id returns 400 for invalid input", async () => {
-  const server = app.listen(0);
-
-  try {
-    const port = server.address().port;
-    const response = await fetch(`http://localhost:${port}/tasks/2`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ completed: "yes" })
-    });
-
-    assert.equal(response.status, 400);
   } finally {
     server.close();
   }

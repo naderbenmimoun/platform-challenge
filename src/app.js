@@ -31,21 +31,16 @@ app.get("/tasks", (_req, res) => {
   res.status(200).json(tasks);
 });
 
-app.patch("/tasks/:id", (req, res) => {
-  const { completed } = req.body;
+app.delete("/tasks/:id", (req, res) => {
+  const taskId = Number(req.params.id);
+  const taskIndex = tasks.findIndex((task) => task.id === taskId);
 
-  if (typeof completed !== "boolean") {
-    return res.status(400).json({ error: "completed must be a boolean" });
-  }
-
-  const task = tasks.find((task) => task.id === Number(req.params.id));
-
-  if (!task) {
+  if (taskIndex === -1) {
     return res.status(404).json({ error: "Task not found" });
   }
 
-  task.completed = completed;
-  return res.status(200).json(task);
+  tasks.splice(taskIndex, 1);
+  return res.status(204).send();
 });
 
 app.get("/total", (_req, res) => {
